@@ -35,7 +35,7 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # Cert
-serviceAccountKey.json
+*credentials*.json
 
 # OpenAPI
 openapi3.yaml
