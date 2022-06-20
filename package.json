@@ -1,5 +1,5 @@
 {
-  "name": "nestjs-with-gcp",
+  "name": "foodeli-app",
   "version": "1.0.0",
   "description": "",
   "author": "",
@@ -23,6 +23,7 @@
     "convert-openapi3-to-swagger2": "api-spec-converter --from=openapi_3 --to=swagger_2 --syntax=yaml openapi3.yaml > swagger2.yaml -y"
   },
   "dependencies": {
+    "@google-cloud/datastore": "^7.0.0",
     "@nestjs/common": "^8.2.4",
     "@nestjs/config": "^1.1.5",
     "@nestjs/core": "^8.2.4",
