@@ -1,9 +1,4 @@
-import {
-  Inject,
-  Module,
-  OnApplicationBootstrap,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Inject, Module, OnApplicationBootstrap, ValidationPipe } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import configuration from './config/configuration';
 import { Environment, EnvironmentConfig } from './config/env.configuration';

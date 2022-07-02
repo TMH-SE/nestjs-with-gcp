@@ -1,38 +1,36 @@
-import { Injectable } from '@nestjs/common';
-import { ClassConstructor, plainToInstance } from 'class-transformer';
-import { DocumentData, QueryDocumentSnapshot } from 'firebase-admin/firestore';
-import { TRANSFORM_GROUPS } from 'src/shared/constants/transform-options.constant';
-import FirestoreCollection from 'src/shared/enums/firestore-collection.enum';
-import { FirebaseService } from '../firebase/firebase.service';
+import { Datastore, DatastoreOptions } from '@google-cloud/datastore';
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
+import { Reflector } from '@nestjs/core';
+import { ClassConstructor } from 'class-transformer';
+import path from 'path';
+import { EnvironmentConfig } from 'src/config/env.configuration';
+import { BaseEntity } from 'src/shared/types/base-entity';
+import { Repository } from './repository';
 
 @Injectable()
 export class DatabaseService {
-  constructor(private readonly firebase: FirebaseService) {}
+  private options: DatastoreOptions = {};
+  private datastore: Datastore;
 
-  getRepository<T>(
-    collectionPath: FirestoreCollection,
-    EntityTarget: ClassConstructor<T>,
+  constructor(
+    @Inject(EnvironmentConfig.KEY)
+    private readonly env: ConfigType<typeof EnvironmentConfig>,
+    private readonly reflector: Reflector,
   ) {
-    const db = this.firebase.firestore;
-    db.settings({
-      ignoreUndefinedProperties: true,
-    });
-    return db.collection(collectionPath).withConverter({
-      toFirestore: (data: T): DocumentData => {
-        return Object.assign({}, data);
-      },
-      fromFirestore: (snapshot: QueryDocumentSnapshot): T => {
-        const id = snapshot.id;
-        const data = snapshot.data();
-        return plainToInstance(
-          EntityTarget,
-          { id, ...data },
-          {
-            enableImplicitConversion: true,
-            groups: [TRANSFORM_GROUPS.viewDto],
-          },
-        );
-      },
-    });
+    const { nodeEnv, projectId } = this.env;
+    if (nodeEnv === 'local') {
+      this.options = {
+        keyFilename: path.join(process.cwd(), 'serviceAccountKey.json'),
+        projectId,
+      };
+    }
+    this.datastore = new Datastore(this.options);
+  }
+
+  getRepository<T extends BaseEntity>(classTarget: ClassConstructor<T>) {
+    const kind = this.reflector.get<string>('kind', classTarget);
+    const repository = new Repository<T>(this.datastore, kind, classTarget);
+    return repository;
   }
 }

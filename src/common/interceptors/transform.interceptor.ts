@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  NestInterceptor,
-  CallHandler,
-  ExecutionContext,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, CallHandler, ExecutionContext } from '@nestjs/common';
 import { instanceToPlain } from 'class-transformer';
 import { Response } from 'express';
 import { Observable } from 'rxjs';
@@ -16,13 +11,8 @@ export interface IResponse<T> {
 }
 
 @Injectable()
-export class TransformInterceptor<T>
-  implements NestInterceptor<T, IResponse<T>>
-{
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Observable<IResponse<T>> {
+export class TransformInterceptor<T> implements NestInterceptor<T, IResponse<T>> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<IResponse<T>> {
     const res = context.switchToHttp().getResponse<Response>();
     const statusCode = res.statusCode;
     return next.handle().pipe(

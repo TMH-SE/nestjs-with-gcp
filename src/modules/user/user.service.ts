@@ -1,79 +1,66 @@
-import {
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
-import { Repository } from 'src/shared/modules/database/types';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { InjectRepository } from 'src/common/decorators/inject-repository.decorator';
+import { Repository } from 'src/shared/modules/database/repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { USER_REPOSITORY } from './user.providers';
 
 @Injectable()
 export class UserService {
   constructor(
-    @Inject(USER_REPOSITORY)
+    @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const docRef = await this.userRepository.add(
-      User.fromCreateDto(createUserDto),
-    );
-    const snapshot = await docRef.get();
-    if (!snapshot.exists) {
-      return null;
+    try {
+      const newUser = await this.userRepository.save(User.fromCreateDto(createUserDto));
+      return newUser;
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
     }
-    return snapshot.data();
   }
 
   async findAll() {
-    const snapshot = await this.userRepository
-      .where('deletedAt', '==', null)
-      .orderBy('createdAt', 'desc')
-      .get();
-    if (snapshot.empty) {
-      return [];
+    try {
+      const query = this.userRepository.query.filter('deletedAt', '=', null);
+      // *NOTE: Should use `repository.find(query)` to run query
+      const users = await this.userRepository.find(query);
+      return users;
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
     }
-    const results = snapshot.docs.map((doc) => {
-      return doc.data();
-    });
-    return results;
   }
 
   async findById(id: string) {
-    const snapshot = await this.userRepository.doc(id).get();
-    if (!snapshot.exists) {
-      return null;
+    try {
+      return this.userRepository.findById(id);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
     }
-    const user = snapshot.data();
-    if (user.deletedAt) {
-      return null;
-    }
-    return user;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const existedUser = await this.findById(id);
-    if (!existedUser) {
-      throw new NotFoundException('User not found');
+    try {
+      const existedUser = await this.findById(id);
+      if (!existedUser) return null;
+      const updatedUser = await this.userRepository.updateOne(
+        new User(Object.assign(existedUser, User.fromUpdateDto(updateUserDto))),
+      );
+      return updatedUser;
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
     }
-    const docRef = this.userRepository.doc(id);
-    const writeResult = await docRef.update(User.fromUpdateDto(updateUserDto));
-    return !!writeResult.writeTime;
   }
 
   async remove(id: string) {
     const existedUser = await this.findById(id);
-    if (!existedUser) {
-      throw new NotFoundException('User not found');
-    }
-    const writeResult = await this.userRepository
-      .doc(id)
-      .update({ deletedAt: Date.now() });
-    if (!writeResult.writeTime) {
-      throw new InternalServerErrorException();
-    }
+    if (!existedUser) return null;
+    const deletedUser = await this.userRepository.deleteOne(existedUser);
+    return deletedUser;
   }
 }

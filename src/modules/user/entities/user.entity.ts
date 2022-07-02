@@ -1,8 +1,6 @@
-import {
-  ClassTransformOptions,
-  instanceToPlain,
-  plainToInstance,
-} from 'class-transformer';
+import { ClassTransformOptions, instanceToPlain, plainToInstance } from 'class-transformer';
+import { Entity } from 'src/common/decorators/entity.decorator';
+import { Field } from 'src/common/decorators/field.decorator';
 import {
   AdditionalProperty,
   OptionalProperty,
@@ -13,6 +11,7 @@ import { BaseEntity } from 'src/shared/types/base-entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 
+@Entity()
 export class User extends BaseEntity {
   constructor(args: Partial<User>, options: ClassTransformOptions = {}) {
     super();
@@ -22,30 +21,35 @@ export class User extends BaseEntity {
   static fromCreateDto(args: CreateUserDto) {
     return new User(args, {
       groups: [TRANSFORM_GROUPS.creatDto],
+      exposeUnsetFields: false,
     });
   }
 
   static fromUpdateDto(args: UpdateUserDto) {
     return instanceToPlain(new User(args), {
       groups: [TRANSFORM_GROUPS.updateDto],
-      excludeExtraneousValues: true,
       exposeUnsetFields: false,
     });
   }
 
   @Property()
+  @Field()
   email: string;
 
   @Property()
+  @Field()
   phoneNumber: string;
 
   @Property()
+  @Field()
   firstName: string;
 
   @Property()
+  @Field()
   lastName: string;
 
   @OptionalProperty()
+  @Field()
   birthDay?: string;
 
   @AdditionalProperty()
