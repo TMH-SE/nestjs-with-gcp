@@ -1,9 +1,4 @@
-import {
-  Inject,
-  Module,
-  OnApplicationBootstrap,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Inject, Module, OnApplicationBootstrap, ValidationPipe } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import configuration from './config/configuration';
 import { Environment, EnvironmentConfig } from './config/env.configuration';
@@ -34,7 +29,6 @@ import { appProviders, APP_SEEDER } from './app.providers';
       useValue: new ValidationPipe({
         transform: true,
         transformOptions: {
-          excludeExtraneousValues: true,
           exposeUnsetFields: false,
           enableImplicitConversion: true,
         },

@@ -1,11 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import {
-  IsDateString,
-  IsEmail,
-  IsPhoneNumber,
-  MinLength,
-} from 'class-validator';
+import { IsDateString, IsEmail, IsPhoneNumber, MinLength } from 'class-validator';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -16,7 +11,7 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty({
-    default: '+84326123456',
+    default: '+84123456789',
   })
   @Expose()
   @IsPhoneNumber()

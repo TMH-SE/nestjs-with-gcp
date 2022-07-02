@@ -27,9 +27,7 @@ export class ApiUserCreatedResponse implements ApiOkResponseModel<User> {
 
 export type UserOkResponseWithPagination = OkResponseWithPaginationModel<User>;
 
-export class ApiUserOkResponseWithPagination
-  implements ApiOkResponseWithPaginationModel<User>
-{
+export class ApiUserOkResponseWithPagination implements ApiOkResponseWithPaginationModel<User> {
   @ApiPropertyOptional({ default: 200 })
   statusCode: number;
 

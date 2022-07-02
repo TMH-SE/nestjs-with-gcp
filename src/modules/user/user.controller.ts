@@ -49,9 +49,7 @@ export class UserController {
     description: 'OK',
     type: ApiUserOkResponseWithPagination,
   })
-  async findAll(
-    @Query() query: PaginationParams,
-  ): Promise<UserOkResponseWithPagination> {
+  async findAll(@Query() query: PaginationParams): Promise<UserOkResponseWithPagination> {
     const users = await this.usersService.findAll();
     if (!users.length) {
       return { data: [], totalCount: 0 };
@@ -84,11 +82,10 @@ export class UserController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UserOkResponse> {
-    const success = await this.usersService.update(id, updateUserDto);
-    if (!success) {
-      return { data: null };
+    const updatedUser = await this.usersService.update(id, updateUserDto);
+    if (!updatedUser) {
+      throw new NotFoundException('User not found');
     }
-    const updatedUser = await this.usersService.findById(id);
     return { data: updatedUser };
   }
 
@@ -98,7 +95,11 @@ export class UserController {
     status: 204,
     description: 'No Content',
   })
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  async remove(@Param('id') id: string) {
+    const deletedUser = await this.usersService.remove(id);
+    if (!deletedUser) {
+      throw new NotFoundException('User not found');
+    }
+    return true;
   }
 }

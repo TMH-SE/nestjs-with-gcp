@@ -8,10 +8,7 @@ async function generateOpenApiSpec() {
   const app = await NestFactory.create(AppModule);
 
   // OpenAPI
-  const config = new DocumentBuilder()
-    .setTitle('NestJS with GCP')
-    .setVersion('1.0')
-    .build();
+  const config = new DocumentBuilder().setTitle('NestJS with GCP').setVersion('1.0').build();
   const openapiDoc = SwaggerModule.createDocument(app, config);
   const yamlDoc = new yaml.Document();
   yamlDoc.contents = Object.assign({}, openapiDoc);

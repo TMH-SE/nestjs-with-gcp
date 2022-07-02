@@ -1,11 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import {
-  App,
-  applicationDefault,
-  cert,
-  initializeApp,
-} from 'firebase-admin/app';
+import { App, applicationDefault, cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { EnvironmentConfig } from 'src/config/env.configuration';
 

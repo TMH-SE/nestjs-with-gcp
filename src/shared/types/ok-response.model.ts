@@ -11,8 +11,6 @@ export class OkResponseWithPaginationModel<T> {
   totalCount: number;
 }
 
-export class ApiOkResponseWithPaginationModel<
-  T,
-> extends OkResponseWithPaginationModel<T> {
+export class ApiOkResponseWithPaginationModel<T> extends OkResponseWithPaginationModel<T> {
   statusCode: number;
 }

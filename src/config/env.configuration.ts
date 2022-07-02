@@ -8,5 +8,5 @@ export type Environment = 'local' | 'development' | 'staging' | 'production';
 export const EnvironmentConfig = registerAs('env', () => ({
   port: parseInt(process.env.PORT, 10) || 9000,
   nodeEnv: (process.env.NODE_ENV || 'local') as Environment,
-  projectId: process.env.GOOGLE_CLOUD_PROJECT || 'nestjs-with-gcp',
+  projectId: process.env.GOOGLE_CLOUD_PROJECT || 'foodeli-app',
 }));
