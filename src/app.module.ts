@@ -34,7 +34,6 @@ import { appProviders, APP_SEEDER } from './app.providers';
       useValue: new ValidationPipe({
         transform: true,
         transformOptions: {
-          excludeExtraneousValues: true,
           exposeUnsetFields: false,
           enableImplicitConversion: true,
         },
